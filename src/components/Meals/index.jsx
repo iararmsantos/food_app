@@ -1,7 +1,7 @@
 import React from "react";
-import { useFetch } from "../hooks/useFetch";
 import { fetchMeals } from "../../http";
 import MealItem from "../MealItem";
+import { useFetch } from "../../hooks/useFetch";
 
 const Meals = () => {
   const {
@@ -14,8 +14,8 @@ const Meals = () => {
   return (
     <ul id="meals">
       {!isFetching &&
-        meals.map((meal) => {
-          return <MealItem meal={meal} />;
+        meals.map((meal, index) => {
+          return <MealItem meal={meal} key={index} />;
         })}
     </ul>
   );
