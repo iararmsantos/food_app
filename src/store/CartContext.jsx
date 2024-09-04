@@ -1,6 +1,9 @@
 //allows us to spread data in all components that is needed
 import { createContext, useReducer } from "react";
 
+/**
+ * Create a context with default values
+ */
 const CartContext = createContext({
   items: [],
   addItem: (item) => {},
@@ -9,10 +12,19 @@ const CartContext = createContext({
 
 //executed by react automatically
 //react passes the arguments
+/**
+ * add or remove items in the cart
+ *
+ * @param   {state} .
+ * @param   {action} how to update the state, can be "ADD_ITEM", "REMOVE_ITEM".
+ * @returns updated state.
+ */
 function cartReducer(state, action) {
   if (action.type === "ADD_ITEM") {
     //not good to change state directly
-    // state.items.push(action.item);
+    //state.items.push(action.item);
+    //instead
+    //create a copy of state
     const existentCartItemIndex = state.items.findIndex(
       (item) => item.id === action.item.id
     );
@@ -54,11 +66,22 @@ function cartReducer(state, action) {
   return state;
 }
 
+/**
+ * Create logic to save cart items to be used by wrapped components components without pass props
+ *
+ * @param {children} components that will be wrapped by this context provider
+ * @returns CartContext.Provider from react
+ */
 export function CartContextProvider({ children }) {
-  //1st parameter: pointer to reducer
-  //2nd parameter: initial state value
+  /**
+   * useReducer:
+   *
+   * @param {cartReducer} pointer to reducer
+   * @param {{item}} initial state value
+   */
   const [cart, dispatchCartAction] = useReducer(cartReducer, { items: [] });
 
+  //call cartReducer
   function addItem(item) {
     dispatchCartAction({ type: "ADD_ITEM", item });
   }
