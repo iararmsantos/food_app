@@ -5,16 +5,25 @@ import Modal from "../Modal";
 import CartContext from "../../store/CartContext";
 import Input from "../UI/Input";
 import Button from "../UI/Button";
+import { useFetch } from "../../hooks/useFetch";
+import { createOrder } from "../../http";
 
 export default function Checkout() {
   const cartContext = useContext(CartContext);
   const userProgressContext = useContext(UserProgressContext);
+  // const {
+  //   isFetching,
+  //   error,
+  //   fetchedData: meals,
+  //   setFetchedData: setMeals,
+  // } = useFetch(createOrder, []);
 
   const cartTotal = cartContext.items.reduce(
     (totalPrice, item) => totalPrice + item.quantity * item.price,
     0
   );
-  function handleSubmit() {
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     //FormData built in the browse
@@ -24,18 +33,37 @@ export default function Checkout() {
     //to access data
     // const enteredEmail = formData.get("email");
     //or
-
-    const data = Object.fromEntries(formData.entries());
+    const customerData = Object.fromEntries(formData.entries());
 
     //when getting from entries input with the same name will be lost
     const acquisitionChannel = formData.getAll("acquisition");
-    data.acquisition = acquisitionChannel;
+    customerData.acquisition = acquisitionChannel;
 
-    console.log(data);
+    const customerOrder = {
+      order: {
+        items: cartContext.items,
+        customer: customerData,
+      },
+    };
+
+    const order = await createOrder(customerOrder);
+    // fetch("http://localhost:3000/orders", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify({
+    //     order: {
+    //       items: cartContext.items,
+    //       customer: customerData,
+    //     },
+    //   }),
+    // });
+    console.log(order);
 
     //to reset the data manually
     // event.target.reset();
-  }
+  };
 
   function handleClose() {
     userProgressContext.hideCheckout();
@@ -49,13 +77,7 @@ export default function Checkout() {
       <form onSubmit={handleSubmit}>
         <h2>Checkout</h2>
         <p>Total Amount: {currencyFormatter.format(cartTotal)}</p>
-        <Input
-          id="fullName"
-          type="text"
-          name="fullName"
-          required
-          label="Full Name"
-        />
+        <Input id="name" type="text" name="name" required label="Full Name" />
         <Input
           label="E-mail Address"
           id="email"
@@ -67,8 +89,8 @@ export default function Checkout() {
         <div className="control-row">
           <Input
             type="text"
-            id="postalCode"
-            name="postalCode"
+            id="postal-code"
+            name="postal-code"
             required
             label="Postal Code"
           />

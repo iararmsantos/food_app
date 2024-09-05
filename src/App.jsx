@@ -7,7 +7,6 @@
 //checkout form if we have items in the form > buttons close and submit
 //success message when click on submit > button okay
 
-import Header from "./components/Header";
 import Main from "./components/Main";
 
 function App() {
