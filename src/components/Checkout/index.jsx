@@ -8,15 +8,22 @@ import Button from "../UI/Button";
 import { useFetch } from "../../hooks/useFetch";
 import { createOrder } from "../../http";
 
+const requestConfig = {
+  method: "POST",
+  // body: JSON.stringify(order),
+  headers: {
+    "Content-Type": "application/json",
+  },
+};
+
 export default function Checkout() {
   const cartContext = useContext(CartContext);
   const userProgressContext = useContext(UserProgressContext);
-  // const {
-  //   isFetching,
-  //   error,
-  //   fetchedData: meals,
-  //   setFetchedData: setMeals,
-  // } = useFetch(createOrder, []);
+  // const { isLoading, error, sendHttpRequest } = useHttp(
+  //   "http://localhost:3000/orders",
+  //   requestConfig,
+  //   []
+  // );
 
   const cartTotal = cartContext.items.reduce(
     (totalPrice, item) => totalPrice + item.quantity * item.price,
@@ -47,18 +54,7 @@ export default function Checkout() {
     };
 
     const order = await createOrder(customerOrder);
-    // fetch("http://localhost:3000/orders", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({
-    //     order: {
-    //       items: cartContext.items,
-    //       customer: customerData,
-    //     },
-    //   }),
-    // });
+
     console.log(order);
 
     //to reset the data manually
