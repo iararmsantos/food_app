@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 async function sendHttpRequest(url, config) {
   const response = await fetch(url, config);
@@ -7,33 +7,36 @@ async function sendHttpRequest(url, config) {
 
   if (!response.ok) {
     throw new Error(
-      resData.message || "Something went wrong. Failed to send request"
+      resData.message || "Something went wrong, failed to send request."
     );
   }
 
   return resData;
 }
 
-const useHttp = (url, config, initialData) => {
-  const [error, setError] = useState();
-  const [isLoading, setIsLoading] = useState(false);
+export default function useHttp(url, config, initialData) {
   const [data, setData] = useState(initialData);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState();
+
+  function clearData() {
+    setData(initialData);
+  }
 
   const sendRequest = useCallback(
-    async function sendRequest() {
+    async function sendRequest(data) {
       setIsLoading(true);
       try {
-        const resData = await sendHttpRequest(url, config);
+        const resData = await sendHttpRequest(url, { ...config, body: data });
         setData(resData);
       } catch (error) {
-        setError(error.message || "Something went wrong");
+        setError(error.message || "Something went wrong!");
       }
       setIsLoading(false);
     },
     [url, config]
   );
 
-  //sendRequest only gor GET or no
   useEffect(() => {
     if ((config && (config.method === "GET" || !config.method)) || !config) {
       sendRequest();
@@ -44,8 +47,7 @@ const useHttp = (url, config, initialData) => {
     data,
     isLoading,
     error,
-    sendHttpRequest,
+    sendRequest,
+    clearData,
   };
-};
-
-export default useHttp;
+}

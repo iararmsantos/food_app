@@ -14,7 +14,6 @@ const Meals = () => {
     isLoading,
     error,
   } = useHttp("http://localhost:3000/meals", requestConfig, []);
-  console.log({ meals, isLoading, error });
 
   if (isLoading) {
     return <p className="center">Fetching meals...</p>;

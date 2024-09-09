@@ -8,6 +8,7 @@ const CartContext = createContext({
   items: [],
   addItem: (item) => {},
   remove: (id) => {},
+  clearCart: () => {},
 });
 
 //executed by react automatically
@@ -51,7 +52,8 @@ function cartReducer(state, action) {
 
     const existingCartItem = state.items[existentCartItemIndex];
     const updatedItems = [...state.items];
-    if (existentCartItemIndex === 1) {
+
+    if (existingCartItem.quantity === 1) {
       updatedItems.splice(existentCartItemIndex, 1);
     } else {
       const updatedItem = {
@@ -61,6 +63,10 @@ function cartReducer(state, action) {
       updatedItems[existentCartItemIndex] = updatedItem;
     }
     return { ...state, items: updatedItems };
+  }
+
+  if (action.type === "CLEAR_CART") {
+    return { ...state, items: [] };
   }
 
   return state;
@@ -90,10 +96,15 @@ export function CartContextProvider({ children }) {
     dispatchCartAction({ type: "REMOVE_ITEM", id });
   }
 
+  function clearCart() {
+    dispatchCartAction({ type: "CLEAR_CART" });
+  }
+
   const cartContext = {
     items: cart.items,
     addItem,
     removeItem,
+    clearCart,
   };
 
   return (
